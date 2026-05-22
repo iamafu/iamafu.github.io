@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFU · Project Hub</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #7c3aed;
+      --accent-light: #a78bfa;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --blue: #58a6ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #1a0533 0%, #0d1117 50%, #0a1628 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .avatar {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -1px;
+      box-shadow: 0 0 24px rgba(124,58,237,0.4);
+    }
+    .hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .hero h1 span { color: var(--accent-light); }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+    .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .badge:hover { border-color: var(--accent); color: var(--accent-light); }
+
+    /* ── Stats ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .stat {
+      flex: 1; max-width: 160px;
+      padding: 20px 16px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-light);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Main Layout ── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Section ── */
+    .section { margin-bottom: 40px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon { font-size: 1.2rem; }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .section-count {
+      margin-left: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1px 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Cards ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-decoration: none;
+      display: block;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+    .card-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--blue);
+      word-break: break-all;
+    }
+    .card-tag {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+    .tag-fork { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid rgba(210,153,34,0.3); }
+    .tag-star { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
+    .tag-own  { background: rgba(124,58,237,0.15); color: var(--accent-light); border: 1px solid rgba(124,58,237,0.3); }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+    footer a { color: var(--accent-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.5rem; }
+      .stats { flex-wrap: wrap; }
+      .stat { min-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="avatar">AFU</div>
+  <h1>Hi, I'm <span>AFU</span> 👋</h1>
+  <p>GitHub 專案索引 · 搶票工具 / 資安工具 / AI Agent</p>
+  <div class="badges">
+    <a class="badge" href="https://github.com/iamafu" target="_blank">
+      🐙 @iamafu
+    </a>
+    <a class="badge" href="https://github.com/iamafu/my-hub" target="_blank">
+      📋 my-hub README
+    </a>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">1</div><div class="stat-label">自建專案</div></div>
+  <div class="stat"><div class="stat-num">4</div><div class="stat-label">Fork</div></div>
+  <div class="stat"><div class="stat-num">19</div><div class="stat-label">Star 收藏</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">分類</div></div>
+</div>
+
+<!-- Main -->
+<main class="container">
+
+  <!-- 自建 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🏠</span>
+      <span class="section-title">自建專案</span>
+      <span class="section-count">1</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/iamafu/doraemon-center" target="_blank">
+        <div class="card-top">
+          <div class="card-name">doraemon-center</div>
+          <span class="card-tag tag-own">自建</span>
+        </div>
+        <div class="card-desc">Doraemon Group 控制中心</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 搶票 & 簽到 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🎫</span>
+      <span class="section-title">搶票 &amp; 自動簽到</span>
+      <span class="section-count">5</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/iamafu/tickets_hunter" target="_blank">
+        <div class="card-top">
+          <div class="card-name">tickets_hunter</div>
+          <span class="card-tag tag-fork">🍴 Fork</span>
+        </div>
+        <div class="card-desc">獵票機器人，自動搶票（tixcraft 等平台）</div>
+      </a>
+      <a class="card" href="https://github.com/bouob/tickets_hunter" target="_blank">
+        <div class="card-top">
+          <div class="card-name">bouob / tickets_hunter</div>
+          <span class="card-tag tag-star">⭐ 原版</span>
+        </div>
+        <div class="card-desc">獵票機器人原始專案</div>
+      </a>
+      <a class="card" href="https://github.com/iamafu/shopee-coins-bot" target="_blank">
+        <div class="card-top">
+          <div class="card-name">shopee-coins-bot</div>
+          <span class="card-tag tag-fork">🍴 Fork</span>
+        </div>
+        <div class="card-desc">蝦皮每日簽到機器人 💰</div>
+      </a>
+      <a class="card" href="https://github.com/iamafu/BooksAutoSign" target="_blank">
+        <div class="card-top">
+          <div class="card-name">BooksAutoSign</div>
+          <span class="card-tag tag-fork">🍴 Fork</span>
+        </div>
+        <div class="card-desc">博客來每日自動簽到</div>
+      </a>
+      <a class="card" href="https://github.com/tasi788/BooksAutoSign" target="_blank">
+        <div class="card-top">
+          <div class="card-name">tasi788 / BooksAutoSign</div>
+          <span class="card-tag tag-star">⭐ 原版</span>
+        </div>
+        <div class="card-desc">博客來簽到原始專案</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 資安 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🔐</span>
+      <span class="section-title">資安工具</span>
+      <span class="section-count">2</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/iamafu/hackingtool" target="_blank">
+        <div class="card-top">
+          <div class="card-name">hackingtool</div>
+          <span class="card-tag tag-fork">🍴 Fork</span>
+        </div>
+        <div class="card-desc">All-in-one 滲透測試工具集</div>
+      </a>
+      <a class="card" href="https://github.com/Z4nzu/hackingtool" target="_blank">
+        <div class="card-top">
+          <div class="card-name">Z4nzu / hackingtool</div>
+          <span class="card-tag tag-star">⭐ 原版</span>
+        </div>
+        <div class="card-desc">hackingtool 原始專案</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Claude Code & AI Skills -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <span class="section-title">Claude Code &amp; AI Skills</span>
+      <span class="section-count">7</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/mathruffian-dot/claude-code-lazy-packs" target="_blank">
+        <div class="card-top"><div class="card-name">claude-code-lazy-packs</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">Claude Code 懶人包，每支影片附 MD 自動執行</div>
+      </a>
+      <a class="card" href="https://github.com/sickn33/antigravity-awesome-skills" target="_blank">
+        <div class="card-top"><div class="card-name">antigravity-awesome-skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">1,400+ agentic skills，支援 Claude Code、Cursor、Codex CLI</div>
+      </a>
+      <a class="card" href="https://github.com/guanyang/antigravity-skills" target="_blank">
+        <div class="card-top"><div class="card-name">antigravity-skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">模組化 Skills，讓 Agent 具備專業領域能力</div>
+      </a>
+      <a class="card" href="https://github.com/google/skills" target="_blank">
+        <div class="card-top"><div class="card-name">google / skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">Google 產品專用 Agent Skills</div>
+      </a>
+      <a class="card" href="https://github.com/addyosmani/agent-skills" target="_blank">
+        <div class="card-top"><div class="card-name">agent-skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">工程師等級 AI coding agent skills</div>
+      </a>
+      <a class="card" href="https://github.com/ComposioHQ/awesome-codex-skills" target="_blank">
+        <div class="card-top"><div class="card-name">awesome-codex-skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">Codex CLI / API 實用 Skills 精選集</div>
+      </a>
+      <a class="card" href="https://github.com/doggy8088/andrej-karpathy-skills" target="_blank">
+        <div class="card-top"><div class="card-name">andrej-karpathy-skills</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">改善 GitHub Copilot CLI 行為的 AGENTS.md</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- AI Agent 框架 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <span class="section-title">AI Agent 框架</span>
+      <span class="section-count">5</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/NousResearch/hermes-agent" target="_blank">
+        <div class="card-top"><div class="card-name">hermes-agent</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">隨使用成長的 Agent 框架</div>
+      </a>
+      <a class="card" href="https://github.com/openai/openai-agents-python" target="_blank">
+        <div class="card-top"><div class="card-name">openai-agents-python</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">OpenAI 輕量多 Agent 工作流框架</div>
+      </a>
+      <a class="card" href="https://github.com/joeseesun/qiaomu-anything-to-notebooklm" target="_blank">
+        <div class="card-top"><div class="card-name">qiaomu-anything-to-notebooklm</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">多來源內容轉 NotebookLM Podcast／PPT／心智圖</div>
+      </a>
+      <a class="card" href="https://github.com/virattt/dexter" target="_blank">
+        <div class="card-top"><div class="card-name">dexter</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">深度財務研究自主 Agent</div>
+      </a>
+      <a class="card" href="https://github.com/epiral/bb-browser" target="_blank">
+        <div class="card-top"><div class="card-name">bb-browser</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">AI Agent 控制 Chrome（CLI + MCP Server）</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 文件處理 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">🛠️</span>
+      <span class="section-title">文件處理工具</span>
+      <span class="section-count">2</span>
+    </div>
+    <div class="cards">
+      <a class="card" href="https://github.com/microsoft/markitdown" target="_blank">
+        <div class="card-top"><div class="card-name">markitdown</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">Microsoft 出品，任意格式文件轉 Markdown</div>
+      </a>
+      <a class="card" href="https://github.com/docling-project/docling" target="_blank">
+        <div class="card-top"><div class="card-name">docling</div><span class="card-tag tag-star">⭐ Star</span></div>
+        <div class="card-desc">文件轉 Gen AI 友好格式</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Built by <a href="https://github.com/iamafu">AFU</a> × <a href="https://claude.ai">Claude Code</a> · Last updated 2026-05-22</p>
+</footer>
+
+</body>
+</html>
