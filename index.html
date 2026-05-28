@@ -196,6 +196,18 @@
       line-height: 1.5;
     }
 
+    /* ── Card Meta ── */
+    .card-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .card-meta span { display: flex; align-items: center; gap: 3px; }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -380,8 +392,76 @@
 </main>
 
 <footer>
-  <p>Built by <a href="https://github.com/iamafu">AFU</a> × <a href="https://claude.ai">Claude Code</a> · Last updated 2026-05-22</p>
+  <p>Built by <a href="https://github.com/iamafu">AFU</a> · Last updated 2026-05-22</p>
 </footer>
 
+<script>
+(function() {
+  const CACHE_KEY = 'gh_stats_cache';
+  const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+  function getCache() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (!raw) return {};
+      const { ts, data } = JSON.parse(raw);
+      if (Date.now() - ts > CACHE_TTL) { localStorage.removeItem(CACHE_KEY); return {}; }
+      return data;
+    } catch { return {}; }
+  }
+
+  function setCache(data) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+
+  function applyMeta(meta, stars, forks, pushedAt) {
+    meta.querySelector('.m-star').textContent = `⭐ ${Number(stars).toLocaleString()}`;
+    meta.querySelector('.m-fork').textContent = `🍴 ${forks}`;
+    meta.querySelector('.m-date').textContent = `🕐 ${formatDate(pushedAt)}`;
+  }
+
+  const cache = getCache();
+  const fetchQueue = [];
+
+  document.querySelectorAll('.card').forEach(card => {
+    const href = card.getAttribute('href') || '';
+    const match = href.match(/github\.com\/([^/?#]+\/[^/?#]+)/);
+    if (!match) return;
+    const repo = match[1].replace(/\/$/, '');
+
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+    meta.innerHTML = '<span class="m-star">⭐ …</span><span class="m-fork">🍴 …</span><span class="m-date">🕐 …</span>';
+    card.appendChild(meta);
+
+    if (cache[repo]) {
+      applyMeta(meta, cache[repo].stars, cache[repo].forks, cache[repo].pushed_at);
+    } else {
+      fetchQueue.push({ repo, meta });
+    }
+  });
+
+  // Fetch missing repos sequentially to stay under rate limit
+  const newData = Object.assign({}, cache);
+  (async function fetchAll() {
+    for (const { repo, meta } of fetchQueue) {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repo}`);
+        if (!res.ok) continue;
+        const d = await res.json();
+        newData[repo] = { stars: d.stargazers_count, forks: d.forks_count, pushed_at: d.pushed_at };
+        applyMeta(meta, d.stargazers_count, d.forks_count, d.pushed_at);
+      } catch {}
+    }
+    if (fetchQueue.length) setCache(newData);
+  })();
+})();
+</script>
 </body>
 </html>
+
